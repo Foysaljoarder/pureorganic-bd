@@ -1,12 +1,20 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(express.static('public'));
+
+// static folder
+app.use(express.static(path.join(__dirname, 'public')));
 
 let orders = [];
+
+// হোম পেজ রাউট (যা Not Found সমস্যা সমাধান করবে)
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 // অর্ডার নেওয়ার API
 app.post('/api/orders', (req, res) => {
@@ -43,7 +51,7 @@ app.get('/api/orders', (req, res) => {
     res.json({ success: true, count: orders.length, orders });
 });
 
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 10000;
 app.listen(PORT, () => {
     console.log(`PureOrganic BD Server running on port ${PORT}`);
 });
