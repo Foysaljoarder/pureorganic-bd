@@ -6,17 +6,22 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// static folder
+// static folder serve
 app.use(express.static(path.join(__dirname, 'public')));
 
 let orders = [];
 
-// হোম পেজ রাউট (যা Not Found সমস্যা সমাধান করবে)
+// ১. মেইন ওয়েবসাইট (Home Page)
 app.get('/', (req, res) => {
     res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// অর্ডার নেওয়ার API
+// ২. অ্যাডমিন প্যানেল (Admin Page Route)
+app.get('/admin.html', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
+// ৩. নতুন অর্ডার পাওয়ার API
 app.post('/api/orders', (req, res) => {
     try {
         const { customerName, phone, address, paymentMethod, bkashTxnId, items, totalPrice } = req.body;
@@ -46,7 +51,7 @@ app.post('/api/orders', (req, res) => {
     }
 });
 
-// অ্যাডমিনের জন্য সব অর্ডার দেখার API
+// ৪. অ্যাডমিনের জন্য সব অর্ডার দেখার API
 app.get('/api/orders', (req, res) => {
     res.json({ success: true, count: orders.length, orders });
 });
