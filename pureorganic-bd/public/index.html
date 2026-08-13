@@ -33,7 +33,8 @@
         .modal-card { background: white; border-radius: 12px; width: 90%; max-width: 450px; padding: 25px; position: relative; }
         .form-group { margin-bottom: 12px; }
         .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; }
-        .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; }
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; }
+        .payment-info { background: #fef3c7; color: #92400e; padding: 10px; border-radius: 6px; font-size: 13px; margin-top: 8px; display: none; }
         .submit-btn { width: 100%; background: #166534; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; margin-top: 10px; cursor: pointer; }
     </style>
 </head>
@@ -77,13 +78,25 @@
                 <div class="form-group"><label>নাম *</label><input type="text" id="cust-name" required></div>
                 <div class="form-group"><label>ফোন নম্বর *</label><input type="tel" id="cust-phone" required></div>
                 <div class="form-group"><label>ঠিকানা *</label><textarea id="cust-address" required></textarea></div>
-                <div class="form-group"><label>পেমেন্ট মেথড</label>
-                    <select id="payment-method">
+                <div class="form-group">
+                    <label>পেমেন্ট মেথড *</label>
+                    <select id="payment-method" onchange="togglePaymentInfo()" required>
                         <option value="cod">ক্যাশ অন ডেলিভারি</option>
-                        <option value="bkash">বিকাশ (01700000000)</option>
+                        <option value="bkash">বিকাশ (bKash Personal)</option>
+                        <option value="nagad">নগদ (Nagad Personal)</option>
                     </select>
                 </div>
-                <div class="form-group"><label>বিকাশ TrxID (যদি বিকাশ করেন)</label><input type="text" id="bkash-id"></div>
+                
+                <div class="payment-info" id="payment-note">
+                    📌 <strong><span id="method-name">বিকাশ/নগদ</span> পার্সোনাল নম্বর: 01930334364</strong><br>
+                    টাকা সেন্ড মানি (Send Money) করার পর নিচে Transaction ID টি লিখুন।
+                </div>
+
+                <div class="form-group" id="trx-group" style="display: none; margin-top: 10px;">
+                    <label>TrxID (ট্রানজেকশন আইডি) *</label>
+                    <input type="text" id="bkash-id" placeholder="যেমন: 8N7A6D5E">
+                </div>
+
                 <button type="submit" class="submit-btn">অর্ডার সাবমিট করুন</button>
             </form>
         </div>
@@ -130,6 +143,26 @@
         function openModal() {
             if(cart.length === 0) return alert('পণ্য যোগ করুন!');
             document.getElementById('checkout-modal').style.display = 'flex';
+        }
+
+        function togglePaymentInfo() {
+            const method = document.getElementById('payment-method').value;
+            const note = document.getElementById('payment-note');
+            const trxGroup = document.getElementById('trx-group');
+            const methodName = document.getElementById('method-name');
+
+            if (method === 'bkash') {
+                note.style.display = 'block';
+                trxGroup.style.display = 'block';
+                methodName.innerText = 'বিকাশ';
+            } else if (method === 'nagad') {
+                note.style.display = 'block';
+                trxGroup.style.display = 'block';
+                methodName.innerText = 'নগদ';
+            } else {
+                note.style.display = 'none';
+                trxGroup.style.display = 'none';
+            }
         }
 
         async function submitOrder(e) {
