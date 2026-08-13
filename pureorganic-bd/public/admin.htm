@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <title>অ্যাডমিন প্যানেল</title>
+    <style>
+        body { font-family: sans-serif; padding: 20px; background: #f1f5f9; }
+        table { width: 100%; border-collapse: collapse; background: white; margin-top: 15px; }
+        th, td { padding: 10px; border: 1px solid #ddd; text-align: left; }
+        th { background: #166534; color: white; }
+    </style>
+</head>
+<body>
+    <h2> PureOrganic BD - অ্যাডমিন ড্যাশবোর্ড</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>অর্ডার আইডি</th>
+                <th>নাম</th>
+                <th>ফোন</th>
+                <th>ঠিকানা</th>
+                <th>পেমেন্ট</th>
+                <th>মোট টাকা</th>
+            </tr>
+        </thead>
+        <tbody id="orders"></tbody>
+    </table>
+
+    <script>
+        async function load() {
+            const res = await fetch('/api/orders');
+            const data = await res.json();
+            document.getElementById('orders').innerHTML = data.orders.map(o => `
+                <tr>
+                    <td>${o.orderId}</td>
+                    <td>${o.customerName}</td>
+                    <td>${o.phone}</td>
+                    <td>${o.address}</td>
+                    <td>${o.paymentMethod} (${o.bkashTxnId})</td>
+                    <td>৳ ${o.totalPrice}</td>
+                </tr>
+            `).join('');
+        }
+        load();
+    </script>
+</body>
+</html>

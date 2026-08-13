@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>প্রাকৃতিক ও ১০০% অর্গানিক ফুড শপ | PureOrganic BD</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #f8fafc; color: #1e293b; padding-bottom: 50px; }
+        .top-bar { background: #14532d; color: #f0fdf4; text-align: center; padding: 8px; font-size: 14px; }
+        header { background: #ffffff; border-bottom: 1px solid #e2e8f0; position: sticky; top: 0; z-index: 100; }
+        .header-container { max-width: 1200px; margin: 0 auto; padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .logo { font-size: 24px; font-weight: 700; color: #166534; text-decoration: none; }
+        .cart-badge { background: #f0fdf4; border: 1px solid #bbf7d0; padding: 8px 16px; border-radius: 30px; font-weight: 600; color: #166534; }
+        .cart-count { background: #166534; color: white; padding: 2px 8px; border-radius: 12px; font-size: 12px; }
+        
+        .hero { background: #14532d; color: white; padding: 40px 20px; text-align: center; margin-bottom: 30px; }
+        .main-container { max-width: 1200px; margin: 0 auto; padding: 0 20px; display: grid; grid-template-columns: 1fr 340px; gap: 30px; }
+        @media (max-width: 900px) { .main-container { grid-template-columns: 1fr; } }
+        
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 20px; }
+        .product-card { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 15px; display: flex; flex-direction: column; }
+        .product-img { width: 100%; height: 160px; object-fit: cover; border-radius: 8px; margin-bottom: 10px; }
+        .product-title { font-size: 16px; font-weight: 600; margin-bottom: 8px; }
+        .product-price { font-size: 18px; font-weight: 700; color: #166534; margin-bottom: 10px; }
+        .add-btn { background: #166534; color: white; border: none; padding: 10px; border-radius: 8px; cursor: pointer; font-weight: 600; }
+        
+        .cart-sidebar { background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; height: fit-content; position: sticky; top: 90px; }
+        .checkout-btn { width: 100%; background: #d97706; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer; margin-top: 15px; }
+
+        /* Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); display: none; justify-content: center; align-items: center; z-index: 1000; }
+        .modal-card { background: white; border-radius: 12px; width: 90%; max-width: 450px; padding: 25px; position: relative; }
+        .form-group { margin-bottom: 12px; }
+        .form-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 4px; }
+        .form-group input, .form-group textarea { width: 100%; padding: 8px; border: 1px solid #e2e8f0; border-radius: 6px; }
+        .submit-btn { width: 100%; background: #166534; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: 700; margin-top: 10px; cursor: pointer; }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">🌿 ১০০% খাঁটি ও বিশুদ্ধ অর্গানিক খাদ্য | সারা বাংলাদেশে হোম ডেলিভারি</div>
+    <header>
+        <div class="header-container">
+            <a href="#" class="logo">🌱 PureOrganic BD</a>
+            <div class="cart-badge">🛒 শপিং ব্যাগ <span class="cart-count" id="cart-count">0</span></div>
+        </div>
+    </header>
+
+    <div class="hero">
+        <h1>প্রকৃতির সেরা সতেজতা আপনার দরজায়</h1>
+        <p>সুস্থ জীবনের জন্য বেছে নিন ১০০% অর্গানিক খাদ্যপণ্য</p>
+    </div>
+
+    <main class="main-container">
+        <section>
+            <h2 style="margin-bottom: 15px; color: #166534;">🍃 আমাদের পণ্যসমূহ</h2>
+            <div class="products-grid" id="products-grid"></div>
+        </section>
+
+        <aside class="cart-sidebar">
+            <h3>আপনার ব্যাগ</h3>
+            <div id="cart-items" style="margin: 15px 0;">ব্যাগে কোনো পণ্য নেই।</div>
+            <hr>
+            <div style="margin-top: 10px; font-weight: 700; font-size: 18px;">
+                মোট: ৳ <span id="total-price">0</span>
+            </div>
+            <button class="checkout-btn" onclick="openModal()">অর্ডার কনফার্ম করুন</button>
+        </aside>
+    </main>
+
+    <!-- Modal -->
+    <div class="modal-overlay" id="checkout-modal">
+        <div class="modal-card">
+            <h3 style="margin-bottom: 15px;">অর্ডার ফর্ম</h3>
+            <form onsubmit="submitOrder(event)">
+                <div class="form-group"><label>নাম *</label><input type="text" id="cust-name" required></div>
+                <div class="form-group"><label>ফোন নম্বর *</label><input type="tel" id="cust-phone" required></div>
+                <div class="form-group"><label>ঠিকানা *</label><textarea id="cust-address" required></textarea></div>
+                <div class="form-group"><label>পেমেন্ট মেথড</label>
+                    <select id="payment-method">
+                        <option value="cod">ক্যাশ অন ডেলিভারি</option>
+                        <option value="bkash">বিকাশ (01700000000)</option>
+                    </select>
+                </div>
+                <div class="form-group"><label>বিকাশ TrxID (যদি বিকাশ করেন)</label><input type="text" id="bkash-id"></div>
+                <button type="submit" class="submit-btn">অর্ডার সাবমিট করুন</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const products = [
+            { id: 1, name: "সুন্দরবনের খাঁটি মধু", price: 650, img: "https://images.unsplash.com/photo-1587049352847-81a56d773cae?w=300" },
+            { id: 2, name: "কাঠের ঘানির সরিষার তেল", price: 320, img: "https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?w=300" },
+            { id: 3, name: "প্রিমিয়াম অর্গানিক ঘি", price: 850, img: "https://images.unsplash.com/photo-1631451095765-2c91616fc9e6?w=300" }
+        ];
+
+        let cart = [];
+
+        function renderProducts() {
+            document.getElementById('products-grid').innerHTML = products.map(p => `
+                <div class="product-card">
+                    <img src="${p.img}" class="product-img">
+                    <div class="product-title">${p.name}</div>
+                    <div class="product-price">৳ ${p.price}</div>
+                    <button class="add-btn" onclick="addToCart(${p.id})">ব্যাগে যোগ করুন</button>
+                </div>
+            `).join('');
+        }
+
+        function addToCart(id) {
+            const p = products.find(prod => prod.id === id);
+            cart.push(p);
+            updateCart();
+        }
+
+        function updateCart() {
+            document.getElementById('cart-count').innerText = cart.length;
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            document.getElementById('total-price').innerText = total;
+
+            if(cart.length === 0) {
+                document.getElementById('cart-items').innerText = "ব্যাগে কোনো পণ্য নেই।";
+            } else {
+                document.getElementById('cart-items').innerHTML = cart.map(i => `<div>${i.name} - ৳${i.price}</div>`).join('');
+            }
+        }
+
+        function openModal() {
+            if(cart.length === 0) return alert('পণ্য যোগ করুন!');
+            document.getElementById('checkout-modal').style.display = 'flex';
+        }
+
+        async function submitOrder(e) {
+            e.preventDefault();
+            const total = cart.reduce((sum, item) => sum + item.price, 0);
+            const payload = {
+                customerName: document.getElementById('cust-name').value,
+                phone: document.getElementById('cust-phone').value,
+                address: document.getElementById('cust-address').value,
+                paymentMethod: document.getElementById('payment-method').value,
+                bkashTxnId: document.getElementById('bkash-id').value,
+                items: cart,
+                totalPrice: total
+            };
+
+            const res = await fetch('/api/orders', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify(payload)
+            });
+            const data = await res.json();
+            if(data.success) {
+                alert(`🎉 ${data.message}\nঅর্ডার আইডি: ${data.order.orderId}`);
+                cart = [];
+                updateCart();
+                document.getElementById('checkout-modal').style.display = 'none';
+            }
+        }
+
+        renderProducts();
+    </script>
+</body>
+</html>
