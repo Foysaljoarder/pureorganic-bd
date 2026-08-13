@@ -3,25 +3,16 @@ const cors = require('cors');
 const path = require('path');
 
 const app = express();
+
 app.use(cors());
 app.use(express.json());
 
-// static folder serve
+// static files (এটি public ফোল্ডারের index.html, admin.html সব সরাসরি ব্রাউজারে সার্ভ করবে)
 app.use(express.static(path.join(__dirname, 'public')));
 
 let orders = [];
 
-// ১. মেইন ওয়েবসাইট (Home Page)
-app.get('/', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'index.html'));
-});
-
-// ২. অ্যাডমিন প্যানেল (Admin Page Route)
-app.get('/admin.html', (req, res) => {
-    res.sendFile(path.join(__dirname, 'public', 'admin.html'));
-});
-
-// ৩. নতুন অর্ডার পাওয়ার API
+// ১. নতুন অর্ডার পাওয়ার API
 app.post('/api/orders', (req, res) => {
     try {
         const { customerName, phone, address, paymentMethod, bkashTxnId, items, totalPrice } = req.body;
@@ -51,9 +42,14 @@ app.post('/api/orders', (req, res) => {
     }
 });
 
-// ৪. অ্যাডমিনের জন্য সব অর্ডার দেখার API
+// ২. অ্যাডমিন প্যানেলের জন্য অর্ডার লিস্ট API
 app.get('/api/orders', (req, res) => {
     res.json({ success: true, count: orders.length, orders });
+});
+
+// ৩. অন্য কোনো ইউআরএল না মিললে ডিফোল্ট হোম পেজ দেখাবে
+app.get('*', (req, res) => {
+    res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
 const PORT = process.env.PORT || 10000;
